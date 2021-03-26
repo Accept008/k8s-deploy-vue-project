@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sonicmoving-platform-service-frontend
+  labels:
+    app: sonicmoving-platform-service-frontend
+spec:
+  strategy:
+    type: RollingUpdate
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: sonicmoving-platform-service-frontend
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - sonicmoving-platform-service-frontend
+              topologyKey: "kubernetes.io/hostname"
+      containers:
+        - name: sonicmoving-platform-service-frontend
+          image: registry.cn-hangzhou.aliyuncs.com/sonicmoving/sonicmoving-platform-service-frontend:1.0.1
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: 0.1
+              memory: 1024Mi
+            limits:
+              cpu: 0.5
+              memory: 2048Mi
+  selector:
+    matchLabels:
+      app: sonicmoving-platform-service-frontend
